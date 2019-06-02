@@ -16,7 +16,6 @@ $AccountTakeover = Read-Host "Based on the information included in the log files
 If ($AccountTakeover -like "y") {Write-Host "The answer is yes."}
   Get-MsolUser $UPN | Set-AzureADUser -AccountEnabled $false
   Get-MsolUser $UPN | Revoke-AzureADUserAllRefreshToken
-  Get-MsolUser $UPN | Set-AzureADUser -AccountEnabled $true
 }
 If ($AccountTakeover -like "n") {
   exit
