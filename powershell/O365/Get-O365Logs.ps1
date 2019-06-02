@@ -13,7 +13,7 @@ If ($Dehydrated -eq $False) {
   Search-UnifiedAuditLog -StartDate $StartDate -EndDate $EndDate | Select-Object -ExpandProperty AuditData | ConvertFrom-Json | Select CreationTime, Operation, ResultStatus, ClientIP, UserId, RequestType, ResultStatusDetail, ActorIpAddress | Where {($_.ActorIpAddress -ne $null)} | Export-Csv "$($env:USERPROFILE)\Desktop\Search-UnifiedAuditLog Report $UPN.csv" –NoTypeInformation -Encoding UTF8
 }
 $AccountTakeover = Read-Host "Based on the information included in the log files, do you believe this account is compromised? (Yes/No)"
-If ($AccountTakeover -like "y") {Write-Host "The answer is yes."}
+If ($AccountTakeover -like "y") {
   Get-MsolUser $UPN | Set-AzureADUser -AccountEnabled $false
   Get-MsolUser $UPN | Revoke-AzureADUserAllRefreshToken
 }
