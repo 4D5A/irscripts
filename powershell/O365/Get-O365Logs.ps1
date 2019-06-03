@@ -14,8 +14,8 @@ If ($Dehydrated -eq $False) {
 }
 $AccountTakeover = Read-Host "Based on the information included in the log files, do you believe this account is compromised? (Yes/No)"
 If ($AccountTakeover -like "y") {
-  Get-MsolUser $UPN | Set-AzureADUser -AccountEnabled $false
-  Get-MsolUser $UPN | Revoke-AzureADUserAllRefreshToken
+  Get-MsolUser -UserPrincipalName $UPN | Set-AzureADUser -AccountEnabled $false
+  Get-MsolUser -UserPrincipalName $UPN | Revoke-AzureADUserAllRefreshToken
 }
 If ($AccountTakeover -like "n") {
   exit
