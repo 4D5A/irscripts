@@ -15,8 +15,8 @@
 #    located in the root of this repository. If not, see
 #    <https://www.gnu.org/licenses/>.
 #
-$AdminAuditLogEnabled = Get-AdminAuditLogConfig | Select -ExpandProperty UnifiedAuditLogIngestionEnabled
-$Dehydrated = Get-OrganizationConfig | Select -ExpandProperty IsDehydrated
+$AdminAuditLogEnabled = Get-AdminAuditLogConfig | Select-Object -ExpandProperty UnifiedAuditLogIngestionEnabled
+$Dehydrated = Get-OrganizationConfig | Select-Object -ExpandProperty IsDehydrated
 $EndDate = (Get-Date)
 $StartDate = (Get-Date).Adddays(-14)
 $UPN = Read-Host "Enter the User Principal Name of the account for which you want to obtain logs"
@@ -30,9 +30,9 @@ If ($Dehydrated -eq $True) {
 If ($Dehydrated -eq $False) {
   If ($AdminAuditLogEnabled -eq $True) {
     Write-Host "Running Get-MessageTrace."
-    Get-MessageTrace -StartDate $StartDate -EndDate $EndDate -RecipientAddress $UPN | Select MessageId, Organization, Received, SenderAddress, RecipientAddress, Subject, Status, FromIP, ToIP, PSComputerName, RunspaceId, MessageTraceId | Export-Csv "$($env:USERPROFILE)\Desktop\Get-MessageTrace Report $UPN.csv" –NoTypeInformation -Encoding UTF8
+    Get-MessageTrace -StartDate $StartDate -EndDate $EndDate -RecipientAddress $UPN | Select-Object MessageId, Organization, Received, SenderAddress, RecipientAddress, Subject, Status, FromIP, ToIP, PSComputerName, RunspaceId, MessageTraceId | Export-Csv "$($env:USERPROFILE)\Desktop\Get-MessageTrace Report $UPN.csv" –NoTypeInformation -Encoding UTF8
     Write-Host "Running Search-UnifiedAuditLog."
-    Search-UnifiedAuditLog -StartDate $StartDate -EndDate $EndDate | Select-Object -ExpandProperty AuditData | ConvertFrom-Json | Select CreationTime, Operation, ResultStatus, ClientIP, UserId, RequestType, ResultStatusDetail, ActorIpAddress | Where {($_.ActorIpAddress -ne $null)} | Export-Csv "$($env:USERPROFILE)\Desktop\Search-UnifiedAuditLog Report $UPN.csv" –NoTypeInformation -Encoding UTF8
+    Search-UnifiedAuditLog -StartDate $StartDate -EndDate $EndDate | Select-Object -ExpandProperty AuditData | ConvertFrom-Json | Select-Object CreationTime, Operation, ResultStatus, ClientIP, UserId, RequestType, ResultStatusDetail, ActorIpAddress | Where-Object {($_.ActorIpAddress -ne $null)} | Export-Csv "$($env:USERPROFILE)\Desktop\Search-UnifiedAuditLog Report $UPN.csv" –NoTypeInformation -Encoding UTF8
   }
   If ($AdminAuditLogEnabled -eq $False) {
     Write-Host "Enabling the Admin Audit Log."
