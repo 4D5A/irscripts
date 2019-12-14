@@ -30,7 +30,7 @@ If ($Dehydrated -eq $True) {
 If ($Dehydrated -eq $False) {
   If ($AdminAuditLogEnabled -eq $True) {
     Write-Host "Running Get-MessageTrace."
-    Get-MessageTrace -StartDate $StartDate -EndDate $EndDate -RecipientAddress $UPN | Select-Object MessageId, Organization, Received, SenderAddress, RecipientAddress, Subject, Status, FromIP, ToIP, PSComputerName, RunspaceId, MessageTraceId | Export-Csv "$($env:USERPROFILE)\Desktop\Get-MessageTrace Report $UPN.csv" –NoTypeInformation -Encoding UTF8
+    Get-MessageTrace -StartDate $StartDate -EndDate $EndDate -SenderAddress $UPN | Select-Object MessageId, Organization, Received, SenderAddress, RecipientAddress, Subject, Status, FromIP, ToIP, PSComputerName, RunspaceId, MessageTraceId | Export-Csv "$($env:USERPROFILE)\Desktop\Get-MessageTrace Report $UPN.csv" –NoTypeInformation -Encoding UTF8
     Write-Host "Running Search-UnifiedAuditLog."
     Search-UnifiedAuditLog -StartDate $StartDate -EndDate $EndDate | Select-Object -ExpandProperty AuditData | ConvertFrom-Json | Select-Object CreationTime, Operation, ResultStatus, ClientIP, UserId, RequestType, ResultStatusDetail, ActorIpAddress | Where-Object {($_.ActorIpAddress -ne $null)} | Export-Csv "$($env:USERPROFILE)\Desktop\Search-UnifiedAuditLog Report $UPN.csv" –NoTypeInformation -Encoding UTF8
   }
@@ -41,8 +41,8 @@ If ($Dehydrated -eq $False) {
 }
 $AccountTakeover = Read-Host "Based on the information included in the log files, do you believe this account is compromised? (Yes/No)"
 If ($AccountTakeover -like "y") {
-  Get-MsolUser -UserPrincipalName $UPN | Set-AzureADUser -AccountEnabled $false
-  Get-MsolUser -UserPrincipalName $UPN | Revoke-AzureADUserAllRefreshToken
+  Set-AzureADUser -objectid $UPN -AccountEnabled $false
+  Revoke-AzureADUserAllRefreshToken -objectid $UPN
 }
 If ($AccountTakeover -like "n") {
   exit
