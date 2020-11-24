@@ -39,9 +39,9 @@ If ($Dehydrated -eq $False) {
     Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $True
   }
 }
-$AccountTakeover = Read-Host "Based on the information included in the log files, do you believe this account is compromised? (Yes/No)"
+$AccountTakeover = Read-Host "Based on the information included in the log files, do you believe this account is compromised? (y/n)"
 If ($AccountTakeover -like "y") {
-  $DisableAzureADUserDisableConfirm = Read-host "If you continue, the AzureAD user $UPN will be disabled and active AzureAD tokens used for authentication by $UPN will be revoked. Do you want to proceed? (Yes/No)"
+  $DisableAzureADUserDisableConfirm = Read-host "If you continue, the AzureAD user $UPN will be disabled and active AzureAD tokens used for authentication by $UPN will be revoked. Do you want to proceed? (y/n)"
     If ($DisableAzureADUserDisableConfirm -like "y") {
       Get-MsolUser -UserPrincipalName $UPN | Set-AzureADUser -AccountEnabled $false
       Get-MsolUser -UserPrincipalName $UPN | Revoke-AzureADUserAllRefreshToken
